@@ -50,6 +50,9 @@ public class Event {
     @Column(nullable = false)
     private Integer numberPlayers;
 
+    @Column(nullable = false)
+    private Integer points;
+
     @Column
     private Double purse;
 

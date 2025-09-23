@@ -14,33 +14,29 @@ public class EventDTO {
 
     private Long id;
 
-    @NotNull
     @Size(max = 255)
     private String name;
 
     @Size(max = 255)
     private String displayName;
 
-    @NotNull
     @Size(max = 255)
     private String tier;
 
-    @NotNull
     private LocalDate date;
 
-    @NotNull
     private Integer numberDays;
 
-    @NotNull
     @Size(max = 255)
     private String city;
 
-    @NotNull
     @Size(max = 255)
     private String country;
 
-    @NotNull
     private Integer numberPlayers;
+
+    @NotNull
+    private Integer points;
 
     private Double purse;
 

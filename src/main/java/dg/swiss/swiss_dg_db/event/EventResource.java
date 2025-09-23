@@ -1,6 +1,8 @@
 package dg.swiss.swiss_dg_db.event;
 
 import jakarta.validation.Valid;
+
+import java.io.IOException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,8 +38,9 @@ public class EventResource {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createEvent(@RequestBody @Valid final EventDTO eventDTO) {
-        final Long createdId = eventService.create(eventDTO);
+    public ResponseEntity<Long> createEvent(@RequestBody @Valid final EventDTO eventDTO) throws IOException {
+        EventDTO eventDTOwDetails = eventService.addDetails(eventDTO);
+        final Long createdId = eventService.create(eventDTOwDetails);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 

@@ -1,7 +1,10 @@
 package dg.swiss.swiss_dg_db.event;
 
 import dg.swiss.swiss_dg_db.events.BeforeDeleteEvent;
+import dg.swiss.swiss_dg_db.scrape.EventDetails;
 import dg.swiss.swiss_dg_db.util.NotFoundException;
+
+import java.io.IOException;
 import java.util.List;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
@@ -13,11 +16,14 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final ApplicationEventPublisher publisher;
+    private final EventDetails eventDetails;
 
     public EventService(final EventRepository eventRepository,
-            final ApplicationEventPublisher publisher) {
+                        final ApplicationEventPublisher publisher,
+                        final EventDetails eventDetails) {
         this.eventRepository = eventRepository;
         this.publisher = publisher;
+        this.eventDetails = eventDetails;
     }
 
     public List<EventDTO> findAll() {
@@ -31,6 +37,19 @@ public class EventService {
         return eventRepository.findById(id)
                 .map(event -> mapToDTO(event, new EventDTO()))
                 .orElseThrow(NotFoundException::new);
+    }
+
+    public EventDTO addDetails(EventDTO eventDTO) throws IOException {
+        eventDetails.scrapeEventInfo(eventDTO.getId());
+        eventDTO.setName(eventDetails.getName());
+        eventDTO.setDate(eventDetails.getDate());
+        eventDTO.setNumberDays(eventDetails.getNumberDays());
+        eventDTO.setTier(eventDetails.getTier());
+        eventDTO.setNumberPlayers(eventDetails.getNumberPlayers());
+        eventDTO.setPurse(eventDetails.getPurse());
+        eventDTO.setCity(eventDetails.getCity());
+        eventDTO.setCountry(eventDetails.getCountry());
+        return eventDTO;
     }
 
     public Long create(final EventDTO eventDTO) {
@@ -63,6 +82,7 @@ public class EventService {
         eventDTO.setCity(event.getCity());
         eventDTO.setCountry(event.getCountry());
         eventDTO.setNumberPlayers(event.getNumberPlayers());
+        eventDTO.setPoints(event.getPoints());
         eventDTO.setPurse(event.getPurse());
         eventDTO.setIsChampionship(event.getIsChampionship());
         eventDTO.setIsSwisstour(event.getIsSwisstour());
@@ -79,6 +99,7 @@ public class EventService {
         event.setCity(eventDTO.getCity());
         event.setCountry(eventDTO.getCountry());
         event.setNumberPlayers(eventDTO.getNumberPlayers());
+        event.setPoints(eventDTO.getPoints());
         event.setPurse(eventDTO.getPurse());
         event.setIsChampionship(eventDTO.getIsChampionship());
         event.setIsSwisstour(eventDTO.getIsSwisstour());
