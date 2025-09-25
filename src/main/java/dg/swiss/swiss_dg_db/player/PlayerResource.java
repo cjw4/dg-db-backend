@@ -1,5 +1,6 @@
 package dg.swiss.swiss_dg_db.player;
 
+import dg.swiss.swiss_dg_db.event.EventDTO;
 import jakarta.validation.Valid;
 
 import java.io.IOException;
@@ -46,8 +47,9 @@ public class PlayerResource {
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updatePlayer(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final PlayerDTO playerDTO) {
-        playerService.update(id, playerDTO);
+            @RequestBody @Valid final PlayerDTO playerDTO) throws IOException {
+        PlayerDTO playerDTOwDetails = playerService.addDetails(playerDTO);
+        playerService.update(id, playerDTOwDetails);
         return ResponseEntity.ok(id);
     }
 
