@@ -46,8 +46,12 @@ public class EventResource {
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateEvent(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final EventDTO eventDTO) {
-        eventService.update(id, eventDTO);
+            @RequestBody @Valid final EventDTO eventDTO) throws IOException {
+        EventDTO eventDTOwDetails = eventService.addDetails(eventDTO);
+        if (!eventDTOwDetails.getId().equals(id)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        eventService.update(id, eventDTOwDetails);
         return ResponseEntity.ok(id);
     }
 
