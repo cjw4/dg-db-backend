@@ -3,6 +3,7 @@ package dg.swiss.swiss_dg_db.scrape;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,7 +15,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Setter
@@ -33,8 +33,20 @@ public class EventDetails {
     private List<TournamentDetail> tournaments;
 
     public void scrapeEventInfo(Long eventId) throws IOException {
+        String url = baseUrl + eventId;
+        // Throw exception if url returns 404
+        try {
+            Connection.Response response = Jsoup.connect(url).execute();
+            // Continue processing if no exception
+        } catch (org.jsoup.HttpStatusException e) {
+            if (e.getStatusCode() == 404) {
+                throw new IOException("Event not found on PDGA website");
+            } else {
+                throw e;
+            }
+        }
         // get the DOM of the event
-        Document document = Jsoup.connect(baseUrl + eventId).get();
+        Document document = Jsoup.connect(url).get();
         // scrape for event name and set it
         String name = scrapeName(document);
         this.setName(name);
