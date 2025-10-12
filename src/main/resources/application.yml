@@ -27,3 +27,6 @@ error:
     codes:
       PlayerPdgaNumberUnique: PLAYER_PDGA_NUMBER_UNIQUE
       PlayerSdaNumberUnique: PLAYER_SDA_NUMBER_UNIQUE
+server:
+  error:
+    include-message: always

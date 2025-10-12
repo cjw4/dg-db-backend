@@ -14,6 +14,8 @@ import dg.swiss.swiss_dg_db.util.NotFoundException;
 
 import java.io.IOException;
 import java.util.List;
+
+import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -156,11 +158,12 @@ public class EventService {
         eventRepository.save(event);
     }
 
+    @Transactional
     public void delete(final Long id) {
         final Event event = eventRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        publisher.publishEvent(new BeforeDeleteEvent(id));
         eventRepository.delete(event);
+        publisher.publishEvent(new BeforeDeleteEvent(id));
     }
 
     private EventDTO mapToDTO(final Event event, final EventDTO eventDTO) {
