@@ -1,6 +1,11 @@
 package dg.swiss.swiss_dg_db.tournament;
 
+import dg.swiss.swiss_dg_db.standings.StandingDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
@@ -13,5 +18,11 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 
     Tournament findByPlayerIdAndEventId(Long playerId, Long eventId);
 
-
+    @Query("SELECT new dg.swiss.swiss_dg_db.tournament.TournamentPointsDTO(" +
+            "t.division, p.id, e.id, p.swisstourLicense, t.points) " +
+            "FROM Tournament t " +
+            "JOIN t.player p " +
+            "JOIN t.event e " +
+            "WHERE t.division = :division")
+    List<TournamentPointsDTO> findTournamentPointsByDivision(@Param("division") String division);
 }

@@ -183,7 +183,7 @@ public class EventDetails {
                 tournaments.addAll(tournamentsEven);
 
                 // Add points
-                HashMap<Integer, Double> pts = createPtsDict(points, tournamentDetails.size());
+                HashMap<Integer, Double> pts = createPtsDict(points, tournaments.size());
 
                 for (Element tournament : tournaments) {
                     TournamentDetail tournamentDetail = parseTournament(tournament, division);
