@@ -1,5 +1,7 @@
 package dg.swiss.swiss_dg_db.standings;
 
+import dg.swiss.swiss_dg_db.player.Player;
+import dg.swiss.swiss_dg_db.player.PlayerRepository;
 import dg.swiss.swiss_dg_db.tournament.TournamentPointsDTO;
 import dg.swiss.swiss_dg_db.tournament.TournamentRepository;
 import org.springframework.stereotype.Service;
@@ -10,9 +12,12 @@ import java.util.stream.Collectors;
 @Service
 public class StandingService {
     private final TournamentRepository tournamentRepository;
+    private final PlayerRepository playerRepository;
 
-    public StandingService(TournamentRepository tournamentRepository) {
+    public StandingService(TournamentRepository tournamentRepository,
+                           PlayerRepository playerRepository) {
         this.tournamentRepository = tournamentRepository;
+        this.playerRepository = playerRepository;
     }
 
     public List<StandingDTO> getStandings(String division) {
@@ -31,7 +36,14 @@ public class StandingService {
                     return new StandingDTO(playerId, eventPointsDTOs, totalPoints, 0);
                 }).toList();
 
-        return calculateRankings(standingDTOs);
+        // Keep only players with swisstourLicense == true
+        List<StandingDTO> licensedStandingDTOs = standingDTOs.stream()
+                .filter(s -> playerRepository.findById(s.getPlayerId())
+                        .map(Player::getSwisstourLicense)
+                        .orElse(false))
+                .toList();
+
+        return calculateRankings(licensedStandingDTOs);
     }
 
     private List<StandingDTO> calculateRankings(List<StandingDTO> standingDTOs) {
