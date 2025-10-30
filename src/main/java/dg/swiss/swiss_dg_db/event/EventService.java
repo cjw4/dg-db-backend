@@ -79,25 +79,30 @@ public class EventService {
         return eventDetails;
     }
 
-    public void addPlayerFromEvent(EventDetails.TournamentDetail tournamentDetail) {
+    public void addPlayerFromEvent(EventDetails.TournamentDetail tournamentDetail) throws IOException, InterruptedException {
         // Add player to database if not yet there
         Long pdgaNumber = tournamentDetail.getPdgaNumber();
         String name = tournamentDetail.getName();
-        PlayerDTO playerDTO = new PlayerDTO();
+        PlayerDTO playerDTO;
         // Search by PDGA Number
         if (pdgaNumber != null && !playerService.pdgaNumberExists(pdgaNumber)) {
-            playerDTO.setPdgaNumber(pdgaNumber);
-            try {
-                Thread.sleep(2000);
-                playerService.addDetails(playerDTO);
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
+            // Catch the case of a player exists in the database, and they now have a pdga number
+            if (playerService.nameExists(name)) {
+                playerDTO = playerService.findByName(name);
             }
+            else {
+                playerDTO = new PlayerDTO();
+            }
+
+            playerDTO.setPdgaNumber(pdgaNumber);
             playerDTO.setSwisstourLicense(false);
+            playerService.addDetails(playerDTO);
+            Thread.sleep(2000);
             System.out.println("Adding Player: " + playerDTO.getFirstname() + " " + playerDTO.getLastname());
             playerService.create(playerDTO);
-            // Search by Name
+        // Search by Name
         } else if (pdgaNumber == null && !playerService.nameExists(name)) {
+            playerDTO = new PlayerDTO();
             String[] names = name.trim().split("\\s+");
             NameConverter.NameInfo nameInfo = NameConverter.splitName(names);
             playerDTO.setFirstname(nameInfo.getFirstName());

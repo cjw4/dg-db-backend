@@ -1,6 +1,7 @@
 package dg.swiss.swiss_dg_db.event;
 
 import dg.swiss.swiss_dg_db.exceptions.EventAlreadyExistsException;
+import dg.swiss.swiss_dg_db.exceptions.TooManyRequestsException;
 import dg.swiss.swiss_dg_db.player.PlayerDTO;
 import dg.swiss.swiss_dg_db.player.PlayerResource;
 import dg.swiss.swiss_dg_db.player.PlayerService;
@@ -58,11 +59,13 @@ public class EventResource {
         EventDetails eventDetails = eventService.addTournaments(id);
 
         eventDetails.getTournaments().forEach(tournamentDetail -> {
-            eventService.addPlayerFromEvent(tournamentDetail);
+            try {
+                eventService.addPlayerFromEvent(tournamentDetail);
+            } catch (IOException | InterruptedException e) {
+                throw new TooManyRequestsException();
+            }
             eventService.addTournamentFromEvent(id, tournamentDetail);
         });
-
-
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
