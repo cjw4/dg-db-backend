@@ -45,6 +45,8 @@ public class PlayerService {
             playerDTO.setFirstname(playerDetails.getFirstname());
             playerDTO.setLastname(playerDetails.getLastname());
             playerDTO.setIsPro(playerDetails.getIsPro());
+        } else {
+            playerDTO.setIsPro(false);
         }
         return playerDTO;
     }
