@@ -189,7 +189,11 @@ public class EventDetails {
                 for (Element tournament : tournaments) {
                     TournamentDetail tournamentDetail = parseTournament(tournament, division);
                     if (tournamentDetail != null) {
-                        tournamentDetail.setPoints(pts.get(tournamentDetail.getPlace()));
+                        if (tournamentDetail.score != null) {
+                            tournamentDetail.setPoints(pts.get(tournamentDetail.getPlace()));
+                        } else {
+                            tournamentDetail.setPoints(0.0);
+                        }
                         tournamentDetails.add(tournamentDetail);
                     }
                 }
