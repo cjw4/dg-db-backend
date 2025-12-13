@@ -12,5 +12,6 @@ public class TournamentPointsDTO {
     private Long playerId;
     private Long eventId;
     private Boolean swisstourLicense;
+    private Boolean isSwisstour;
     private Double points;
 }

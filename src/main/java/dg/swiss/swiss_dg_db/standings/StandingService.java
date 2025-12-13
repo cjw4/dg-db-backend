@@ -1,5 +1,6 @@
 package dg.swiss.swiss_dg_db.standings;
 
+import dg.swiss.swiss_dg_db.event.EventRepository;
 import dg.swiss.swiss_dg_db.player.Player;
 import dg.swiss.swiss_dg_db.player.PlayerRepository;
 import dg.swiss.swiss_dg_db.tournament.TournamentPointsDTO;
@@ -13,16 +14,23 @@ import java.util.stream.Collectors;
 public class StandingService {
     private final TournamentRepository tournamentRepository;
     private final PlayerRepository playerRepository;
+    private final EventRepository eventRepository;
 
     public StandingService(TournamentRepository tournamentRepository,
-                           PlayerRepository playerRepository) {
+                           PlayerRepository playerRepository, EventRepository eventRepository) {
         this.tournamentRepository = tournamentRepository;
         this.playerRepository = playerRepository;
+        this.eventRepository = eventRepository;
     }
 
     public List<StandingDTO> getStandings(String division) {
         List<TournamentPointsDTO> tournamentPointsDTOs = tournamentRepository.findTournamentPointsByDivision(division);
         List<StandingDTO> standingDTOs = tournamentPointsDTOs.stream()
+                // only include swisstour events
+                .filter(TournamentPointsDTO::getIsSwisstour)
+                // only include players with swisstour license
+                .filter(TournamentPointsDTO::getSwisstourLicense)
+                // turn the TournamentPointsDTOs into StandingDTOs
                 .collect(Collectors.groupingBy(TournamentPointsDTO::getPlayerId))
                 .entrySet().stream()
                 .map(entry -> {
@@ -36,14 +44,7 @@ public class StandingService {
                     return new StandingDTO(playerId, eventPointsDTOs, totalPoints, 0);
                 }).toList();
 
-        // Keep only players with swisstourLicense == true
-        List<StandingDTO> licensedStandingDTOs = standingDTOs.stream()
-                .filter(s -> playerRepository.findById(s.getPlayerId())
-                        .map(Player::getSwisstourLicense)
-                        .orElse(false))
-                .toList();
-
-        return calculateRankings(licensedStandingDTOs);
+        return calculateRankings(standingDTOs);
     }
 
     private List<StandingDTO> calculateRankings(List<StandingDTO> standingDTOs) {
