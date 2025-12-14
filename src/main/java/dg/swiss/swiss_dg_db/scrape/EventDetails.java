@@ -18,6 +18,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Setter
@@ -167,9 +169,9 @@ public class EventDetails {
 
     public static List<TournamentDetail> scrapeTournaments(Document document, Integer points) {
         Element results = document.selectFirst(".leaderboard");
-        List<TournamentDetail> tournamentDetails = new ArrayList<>();
-
         assert results != null;
+
+        List<TournamentDetail> allTournamentDetails = new ArrayList<>();
         Elements categories = results.select("details");
         for (Element c : categories) {
             Element divisionElement = c.selectFirst(".division");
@@ -183,23 +185,32 @@ public class EventDetails {
                 tournaments.addAll(tournamentsOdd);
                 tournaments.addAll(tournamentsEven);
 
-                // Add points
-                HashMap<Integer, Double> pts = createPtsDict(points, tournaments.size());
-
+                // Collect scraped tournaments as a list of TournamentDetails
+                List<TournamentDetail> tournamentDetails = new ArrayList<>();
                 for (Element tournament : tournaments) {
                     TournamentDetail tournamentDetail = parseTournament(tournament, division);
+                    tournamentDetails.add(tournamentDetail);
+                }
+
+                // Add points
+                HashMap<Integer, Double> pts = createPtsDict(points, tournaments.size());
+                // Split points for ties before assigning
+                pts = splitPointsForTies(pts, tournamentDetails);
+
+                // Loop through the TournamentDetails and assign points
+                for ( TournamentDetail tournamentDetail : tournamentDetails) {
                     if (tournamentDetail != null) {
                         if (tournamentDetail.score != null) {
                             tournamentDetail.setPoints(pts.get(tournamentDetail.getPlace()));
                         } else {
                             tournamentDetail.setPoints(0.0);
                         }
-                        tournamentDetails.add(tournamentDetail);
                     }
                 }
+                allTournamentDetails.addAll(tournamentDetails);
             }
         }
-        return tournamentDetails;
+        return allTournamentDetails;
     }
 
     private static HashMap<Integer, Double> createPtsDict(double scale, Integer noPlayers) {
@@ -219,6 +230,47 @@ public class EventDetails {
             pointsMap.put(i, minPoints); // Assign minimum points
         }
         return pointsMap;
+    }
+
+    private static HashMap<Integer, Double> splitPointsForTies(HashMap<Integer, Double> originalPts, List<TournamentDetail> tournamentDetails) {
+        // Create a map to track the count of participants for each place
+        Map<Integer, Long> placeCountMap = tournamentDetails.stream()
+                .filter(detail -> detail.getPlace() != null)
+                .collect(Collectors.groupingBy(TournamentDetail::getPlace, Collectors.counting()));
+
+        // Create a new points map to store adjusted points
+        HashMap<Integer, Double> adjustedPts = new HashMap<>(originalPts);
+
+        // Iterate through places with ties
+        placeCountMap.forEach((place, count) -> {
+            if (count > 1) {
+                // Calculate average points for tied positions
+                double avgPoints = calculateAveragePointsForTiedPlace(originalPts, place, count);
+                adjustedPts.put(place, avgPoints);
+            }
+        });
+
+        return adjustedPts;
+    }
+
+
+    private static double calculateAveragePointsForTiedPlace(HashMap<Integer, Double> originalPts, int tiedPlace, long tiedCount) {
+        // Collect points for the consecutive places that will be averaged
+        List<Double> pointsToAverage = new ArrayList<>();
+
+        // Add points for the tied place and subsequent places
+        for (int i = 0; i < tiedCount; i++) {
+            Double points = originalPts.get(tiedPlace + i);
+            if (points != null) {
+                pointsToAverage.add(points);
+            }
+        }
+
+        // Calculate the average of these points
+        return pointsToAverage.stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
     }
 
     private static TournamentDetail parseTournament(Element tournament, String division) {
