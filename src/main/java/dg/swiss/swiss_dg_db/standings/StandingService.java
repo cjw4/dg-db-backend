@@ -15,13 +15,15 @@ public class StandingService {
         this.tournamentRepository = tournamentRepository;
     }
 
-    public List<StandingDTO> getStandings(String division) {
+    public List<StandingDTO> getStandings(String division, Integer year) {
         List<TournamentPointsDTO> tournamentPointsDTOs = tournamentRepository.findTournamentPointsByDivision(division);
         List<StandingDTO> standingDTOs = tournamentPointsDTOs.stream()
                 // only include swisstour events
                 .filter(TournamentPointsDTO::getIsSwisstour)
                 // only include players with swisstour license
                 .filter(TournamentPointsDTO::getSwisstourLicense)
+                // only include from the particular year
+                .filter(t -> Objects.equals(t.getYear(), year))
                 // turn the TournamentPointsDTOs into StandingDTOs
                 .collect(Collectors.groupingBy(TournamentPointsDTO::getPlayerId))
                 .entrySet().stream()

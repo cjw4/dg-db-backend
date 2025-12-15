@@ -36,6 +36,11 @@ public class EventResource {
         return ResponseEntity.ok(eventService.findAll());
     }
 
+    @GetMapping("/year/{year}")
+    public ResponseEntity<List<EventDTO>> getEventsByYear(@PathVariable Integer year) {
+        return ResponseEntity.ok(eventService.findByYear(year));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<EventDTO> getEvent(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(eventService.get(id));
@@ -75,7 +80,7 @@ public class EventResource {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateEvent(@PathVariable(name = "id") final Long id,
+    public ResponseEntity<EventDTO> updateEvent(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final EventDTO eventDTO) throws IOException {
         // get the pts before and after change
         Integer ptsBefore = eventRepository.findById(id).get().getPoints();
@@ -96,7 +101,7 @@ public class EventResource {
             }
         }
 
-        return ResponseEntity.ok(id);
+        return ResponseEntity.ok(eventDTOwDetails);
     }
 
     @DeleteMapping("/{id}")

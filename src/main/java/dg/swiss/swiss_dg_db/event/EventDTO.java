@@ -25,6 +25,8 @@ public class EventDTO {
 
     private LocalDate date;
 
+    private Integer year;
+
     private Integer numberDays;
 
     @Size(max = 255)

@@ -14,4 +14,5 @@ public class TournamentPointsDTO {
     private Boolean swisstourLicense;
     private Boolean isSwisstour;
     private Double points;
+    private Integer year;
 }

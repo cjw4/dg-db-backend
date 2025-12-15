@@ -56,6 +56,14 @@ public class EventService {
                 .toList();
     }
 
+    public List<EventDTO> findByYear(Integer year) {
+        final List<Event> events = eventRepository.findAll(Sort.by("id"));
+        return events.stream()
+                .filter(event -> event.getYear().equals(year))
+                .map(event -> mapToDTO(event, new EventDTO()))
+                .toList();
+    }
+
     public EventDTO get(final Long id) {
         return eventRepository.findById(id)
                 .map(event -> mapToDTO(event, new EventDTO()))
@@ -198,6 +206,7 @@ public class EventService {
         eventDTO.setDisplayName(event.getDisplayName());
         eventDTO.setTier(event.getTier());
         eventDTO.setDate(event.getDate());
+        eventDTO.setYear(event.getYear());
         eventDTO.setNumberDays(event.getNumberDays());
         eventDTO.setCity(event.getCity());
         eventDTO.setCountry(event.getCountry());
@@ -216,6 +225,7 @@ public class EventService {
         event.setDisplayName(eventDTO.getDisplayName());
         event.setTier(eventDTO.getTier());
         event.setDate(eventDTO.getDate());
+        event.setYear(eventDTO.getYear());
         event.setNumberDays(eventDTO.getNumberDays());
         event.setCity(eventDTO.getCity());
         event.setCountry(eventDTO.getCountry());

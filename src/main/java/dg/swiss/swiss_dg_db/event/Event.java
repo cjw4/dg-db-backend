@@ -32,6 +32,9 @@ public class Event {
     @Column(nullable = false)
     private LocalDate date;
 
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 2025")
+    private Integer year;
+
     @Column(nullable = false)
     private Integer numberDays;
 

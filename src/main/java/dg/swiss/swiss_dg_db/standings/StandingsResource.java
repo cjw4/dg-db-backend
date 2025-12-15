@@ -1,11 +1,9 @@
 package dg.swiss.swiss_dg_db.standings;
 
-import dg.swiss.swiss_dg_db.tournament.TournamentPointsDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin("http://localhost:4200")
 @RestController
@@ -18,8 +16,9 @@ public class StandingsResource {
         this.standingService = standingService;
     }
 
-    @GetMapping("/{division}")
-    public ResponseEntity<List<StandingDTO>> getStandings(@PathVariable(name = "division") final String division) {
-        return ResponseEntity.ok(standingService.getStandings(division));
+    @GetMapping("/{year}/{division}")
+    public ResponseEntity<List<StandingDTO>> getStandings(@PathVariable(name = "division") final String division,
+                                                          @PathVariable(name = "year") final Integer year) {
+        return ResponseEntity.ok(standingService.getStandings(division, year));
     }
 }
