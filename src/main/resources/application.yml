@@ -56,6 +56,6 @@ spring:
     password: ${JDBC_DATABASE_PASSWORD:${DB_PASSWORD}}
 app:
   frontend:
-    url: "https://swiss-dg-db.onrender.com"
+    url: "https://dg-db-frontend.onrender.com"
 
 
