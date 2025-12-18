@@ -1,11 +1,5 @@
+---
 spring:
-  datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/swiss-dg-db}
-    username: ${JDBC_DATABASE_USERNAME:swisstour}
-    password: ${JDBC_DATABASE_PASSWORD:pass-me}
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 10
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,6 +11,20 @@ spring:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
+  profiles:
+    active: dev
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/swiss-dg-db}
+    username: ${JDBC_DATABASE_USERNAME:${DB_USERNAME_DEV}}
+    password: ${JDBC_DATABASE_PASSWORD:${DB_PASSWORD_DEV}}
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
   security:
     user:
       name: swisstour-admin
@@ -34,5 +42,20 @@ error:
 server:
   error:
     include-message: always
+app:
+  frontend:
+    url: "http://localhost:4200"
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${JDBC_DATABASE_URL:jdbc:postgresql://dpg-d51cdomuk2gs73c6agk0-a.frankfurt-postgres.render.com:5432/swiss_dg_db}
+    username: ${JDBC_DATABASE_USERNAME:${DB_USERNAME}}
+    password: ${JDBC_DATABASE_PASSWORD:${DB_PASSWORD}}
+app:
+  frontend:
+    url: "https://swiss-dg-db.onrender.com"
 
 

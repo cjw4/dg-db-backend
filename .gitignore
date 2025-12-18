@@ -6,6 +6,8 @@ target/
 application-local.yml
 *.log
 .DS_Store
+.env
+*.env
 
 ## IntelliJ IDEA
 .idea

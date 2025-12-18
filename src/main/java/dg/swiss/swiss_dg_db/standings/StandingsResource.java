@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin("http://localhost:4200")
 @RestController
 @RequestMapping("/api/standings")
 public class StandingsResource {
