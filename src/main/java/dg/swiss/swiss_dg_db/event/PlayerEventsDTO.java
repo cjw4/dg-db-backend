@@ -1,10 +1,12 @@
 package dg.swiss.swiss_dg_db.event;
 
+import dg.swiss.swiss_dg_db.round.RoundDTOsmall;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -31,7 +33,5 @@ public class PlayerEventsDTO {
     private Double tournamentPrize;
     private Integer tournamentScore;
     private Double tournamentPoints;
-    private Integer roundNumber;
-    private Integer roundRating;
-    private Integer roundScore;
+    private List<RoundDTOsmall> rounds;
 }
