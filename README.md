@@ -1,39 +1,22 @@
-# Swiss Dg Db
+# Swiss Tour Application (Backend)
 
-This app was created with Bootify.io - tips on working with the code [can be found here](https://bootify.io/next-steps/).
+## Goal
+
+This app was created for the Swiss Disc Golf Association (SDA) in order to solve the following problems:
+- Automate the calculation of Swiss Tour standings
+- Implement a web-based GUI for administrator access, easily usable by non-tech-savvy users to add players, events and results
+- Track Swiss player statistics for selection for national teams
+- Integrate additional tools for tournament directors (i.e. checking which players have valid swiss tour licenses)  
+
+## Features
+- REST API for events, players, and tournaments
+- Scrapping of event results from pdga.com
+- Calculation of standings
+  
+## Design
+ 
 
 ## Development
 
-Update your local database connection in `application.yml` or create your own `application-local.yml` file to override settings for development.
+The backend (this repository) is written using Spring Boot and was initially kick-started using Bootify.io.
 
-During development it is recommended to use the profile `local`. In IntelliJ `-Dspring.profiles.active=local` can be added in the VM options of the Run Configuration after enabling this property in "Modify options".
-
-Lombok must be supported by your IDE. For IntelliJ install the Lombok plugin and enable annotation processing - [learn more](https://bootify.io/next-steps/spring-boot-with-lombok.html).
-
-After starting the application it is accessible under `localhost:8080`.
-
-## Build
-
-The application can be built using the following command:
-
-```
-mvnw clean package
-```
-
-Start your application with the following command - here with the profile `production`:
-
-```
-java -Dspring.profiles.active=production -jar ./target/swiss-dg-db-0.0.1-SNAPSHOT.jar
-```
-
-If required, a Docker image can be created with the Spring Boot plugin. Add `SPRING_PROFILES_ACTIVE=production` as environment variable when running the container.
-
-```
-mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=dg.swiss/swiss-dg-db
-```
-
-## Further readings
-
-* [Maven docs](https://maven.apache.org/guides/index.html)  
-* [Spring Boot reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)  
-* [Spring Data JPA reference](https://docs.spring.io/spring-data/jpa/reference/jpa.html)
